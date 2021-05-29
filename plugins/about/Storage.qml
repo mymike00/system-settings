@@ -82,12 +82,14 @@ ItemPage {
             property real freediskSpace: {
                 return backendInfo.getFreeSpace("/home")
             }
+            property real userdata: backendInfo.getTotalSpace("/userdata")
 
-            property real usedByUbuntu: diskSpace -
+            property real usedByUbuntu: userdata -
                                         freediskSpace -
                                         backendInfo.homeSize -
                                         backendInfo.totalClickSize
-            property real otherSize: diskSpace -
+            // Files in the home direcoty but not in any of the other categories
+            property real otherSize: userdata -
                                      freediskSpace -
                                      usedByUbuntu -
                                      clickAndAppDataSize -
@@ -103,8 +105,10 @@ ItemPage {
                                                backendInfo.appConfigSize +
                                                backendInfo.appDataSize -
                                                backendInfo.libertineSize
+            property real reserved: diskSpace - userdata
             //TODO: Let's consider use unified colors in a ¿file?
             property variant spaceColors: [
+                "#b05738",
                 "#f67936",
                 "#f8ae46",
                 "#edb55f",
@@ -116,7 +120,8 @@ ItemPage {
                 "#a77eaa",
                 "#cb556c"]
             property variant spaceLabels: [
-                i18n.tr("Used by Ubuntu"),
+                i18n.tr("System Reserved"),
+                i18n.tr("Used by Ubuntu Touch"),
                 i18n.tr("Videos"),
                 i18n.tr("Audio"),
                 i18n.tr("Pictures"),
@@ -127,6 +132,7 @@ ItemPage {
                 i18n.tr("Other files"),
                 i18n.tr("Used by apps")]
             property variant spaceValues: [
+                reserved, // used by the partition layout
                 usedByUbuntu, // Used by Ubuntu
                 backendInfo.moviesSize,
                 backendInfo.audioSize,
@@ -138,6 +144,7 @@ ItemPage {
                 otherSize, //Other Files
                 clickAndAppDataSize]
             property variant spaceObjectNames: [
+                "systemReservedItem",
                 "usedByUbuntuItem",
                 "moviesItem",
                 "audioItem",
